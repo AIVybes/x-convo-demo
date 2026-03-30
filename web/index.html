@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Conversation</title>
+</head>
+<body>
+  <h1>Conversation</h1>
+  <div id="app"></div>
+
+  <script>
+    const API = "https://YOUR-RENDER-URL.onrender.com";
+
+    fetch(API + "/conversation/1991680952209207640")
+      .then(res => res.json())
+      .then(data => {
+        const app = document.getElementById("app");
+
+        data.forEach(t => {
+          const div = document.createElement("div");
+          div.innerHTML = `<b>${t.user_id}</b> — ${t.tweet_id}`;
+          app.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>
