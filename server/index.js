@@ -12,6 +12,54 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
+// 🔥 AUTO INIT DATABASE
+const initDB = async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      user_id TEXT PRIMARY KEY
+    );
+
+    CREATE TABLE IF NOT EXISTS tweets (
+      tweet_id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      created_at TIMESTAMP NOT NULL,
+      quoted_tweet_id TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS tweet_edges (
+      from_tweet_id TEXT NOT NULL,
+      to_tweet_id TEXT NOT NULL,
+      edge_type TEXT NOT NULL,
+      PRIMARY KEY (from_tweet_id, to_tweet_id, edge_type)
+    );
+  `);
+
+  // seed data (safe to run repeatedly)
+  await pool.query(`
+    INSERT INTO users (user_id)
+    VALUES ('marklevinshow'), ('megynkelly')
+    ON CONFLICT DO NOTHING;
+  `);
+
+  await pool.query(`
+    INSERT INTO tweets (tweet_id, user_id, created_at, quoted_tweet_id)
+    VALUES
+    ('1991654970819834256', 'megynkelly', NOW(), NULL),
+    ('1991680952209207640', 'marklevinshow', NOW(), '1991654970819834256')
+    ON CONFLICT DO NOTHING;
+  `);
+
+  await pool.query(`
+    INSERT INTO tweet_edges (from_tweet_id, to_tweet_id, edge_type)
+    VALUES
+    ('1991680952209207640', '1991654970819834256', 'quote')
+    ON CONFLICT DO NOTHING;
+  `);
+
+  console.log("DB initialized");
+};
+
+// your existing query
 const getConversation = async (tweetId) => {
   const query = `
     WITH RECURSIVE conversation AS (
@@ -45,6 +93,7 @@ app.get("/conversation/:tweetId", async (req, res) => {
   res.json(data);
 });
 
-app.listen(3000, () => {
-  console.log("Server running");
+// 🚀 INIT DB BEFORE START
+initDB().then(() => {
+  app.listen(3000, () => console.log("Server running"));
 });
