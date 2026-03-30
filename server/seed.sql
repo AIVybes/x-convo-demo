@@ -1,0 +1,8 @@
+INSERT INTO users VALUES ('marklevinshow'), ('megynkelly');
+
+INSERT INTO tweets VALUES
+('1991654970819834256', 'megynkelly', NOW(), NULL),
+('1991680952209207640', 'marklevinshow', NOW(), '1991654970819834256');
+
+INSERT INTO tweet_edges VALUES
+('1991680952209207640', '1991654970819834256', 'quote');
