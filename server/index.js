@@ -1,4 +1,4 @@
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
+console.log("ENV CHECK:", process.env.DATABASE_URL);
 
 import express from "express";
 import pkg from "pg";
